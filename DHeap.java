@@ -49,9 +49,22 @@ public class DHeap
      */
     public boolean isHeap() 
     {
-        return false; // just for illustration - should be replaced by student code
-    }
-
+    	//intuition: check the order of the keys in the heap
+    	// meaning - if the children of each parent are bigger than the parent
+    	// for each node we need to check if its children are in the tree
+	// if they are, we need to check if they are bigger than their parent
+	 // we need take in consideration parents that does not have d children
+    	for (int i=0; i<size; i++){
+		if (child(i,1,this.d)>=this.max_size){
+			return true;
+		}
+		for (int j=1;j<=this.d; j++){
+			if ((this.array[child(i,j,this.d)]!=null) && (this.array[child(i,j,this.d)].getKey()<this.array[i].getKey()){
+				return false;
+			}
+		}
+		return true;
+	}
 
  /**
      * public static int parent(i,d), child(i,k,d)
@@ -63,8 +76,27 @@ public class DHeap
      * vertex i in a complete D-ary tree stored in an array. 
      * Note that indices of arrays in Java start from 0.
      */
-    public static int parent(int i, int d) { return 999;} // just for illustration - should be replaced by student code
-    public static int child (int i, int k, int d) { return 999;} // just for illustration - should be replaced by student code 
+    public static int parent(int i, int d) { 
+    	if (i==0){
+    		return -1;
+    	}
+    	if (d==1){
+    		return i-1;
+    	}
+    	return ((i-1)/d);
+    }
+    public static int child (int i, int k, int d) {
+    	if ((k<1) || (d<k)){
+    		return -1;
+    	}
+    	if ((d==1) && (k==1)){
+    		return i+1;
+    	}
+    	if(i*d +k<=this.max_size){
+    		return (i*d +k);
+    	}
+    	return -1;
+   } 
 
     /**
     * public int Insert(DHeap_Item item)
@@ -80,9 +112,14 @@ public class DHeap
     */
     public int Insert(DHeap_Item item) 
     {        
-    	return;// should be replaced by student code
+    	if (item==null) {return -1;}
+    	if ((this.isHeap()) && (getSize()<this.max_size)){
+    		this.array[size]=item;
+    	}
+     	int changes = heapifyUp(this.array[getSize()-1]);
+    	return changes;
     }
-
+			    
  /**
     * public int Delete_Min()
     *
@@ -160,6 +197,20 @@ public class DHeap
 	* postcondition: array1 is sorted 
 	*/
 	public static int DHeapSort(int[] array1, int d) {
-		return;
+		int i=0;
+		while (array1[i]==null){
+				i++;
+		}
+		if (i==0){
+			return 0;
+		}
+		int adjustments = 0;
+		int local_adj = 0;
+		int half_size=(int)Math.floor((double) (i/2));
+		for (int j=half_size-1; j>=0; j--){
+			local_adj = heapifyDown(array1,j);
+			adjustments = adjustments + local_adj;
+		}
+		return adjustments;
 	}
 }
